@@ -42,23 +42,33 @@ if sys.argv[10]=="upper":
 
 
 debug = True
-debug = False
+# debug = False
 
 def nopen(f):
     if f.endswith(".gz"):
+        print("gz")
         return gzip.open(f)
-    return open(f)
+    print("std open")
+    return open(f, encoding="utf-8")
 
 words = set()
 total_word_count = 0
 word_count = {}
-for l in nopen(file_wordcount):
-    ls = l.strip().split("\t")
-    wc = int(ls[1])
-    #if wc >=min_word_count:
-    word_count[ls[0]]=wc
-    total_word_count+=wc
 
+with open(file_wordcount, "r", encoding="utf-8") as f:
+    lines = f.readlines()
+    print("lines", len(lines))
+# with open(file_wordcount, "r", encoding="utf-8") as f:
+    for idx, l in enumerate(lines): 
+        try: 
+            ls = l.strip().split("\t")
+            wc = int(ls[1])
+            #if wc >=min_word_count:
+            word_count[ls[0]]=wc
+            total_word_count+=wc
+        except (UnicodeEncodeError, IndexError) as e:
+            print(idx, e)
+print("loading done....")
 def removeWord(w):
     if len(w.replace("-",""))==0:
         return True
@@ -134,6 +144,18 @@ def appendSuffixAndPrefix(w):
         return sp
     return ps
 
+try:
+    cmp
+except NameError:
+    def cmp(x, y):
+        if x < y:
+            return -1
+        elif x > y:
+           return 1
+        else:
+            return 0
+ 
+
 def generateCompound(w,ws):
     #remove too short words
     #if debug: sys.out.write(ws
@@ -141,9 +163,13 @@ def generateCompound(w,ws):
     #print nws
     if len(nws)==0:
         
-        if debug: sys.stderr.write( "NONE: "+w+"\n")
+        if debug:
+            try:
+                 print( "NONE: "+w+"\n",)
+            except UnicodeEncodeError as e:
+                print(e)
         return None
-    nws_sorted = sorted(nws,cmp=bylength,reverse=True)
+    nws_sorted = sorted(nws,key=lambda x: len("".join(list(x))),reverse=True)
     #get split points
     splits=set()
     for n in nws_sorted:
@@ -172,7 +198,7 @@ def addCompound(comp,w,ws):
     if ws !=None:
         ws_merged = appendSuffixAndPrefix(ws)
         comp[w]=ws_merged
-        if debug:sys.stderr.write( "Result: "+w+"\t"+ws+"\t"+ws_merged+"\n")
+        if debug:print( "Result: "+w+"\t"+ws+"\t"+ws_merged+"\n")
 def processCompound(comp,w,wns):
     wns_split = wns.split(" ")
     if "-" in w and dash_words ==1:
@@ -286,7 +312,7 @@ for l in nopen(file_compound):
         pprefix = cands_str[idx]
 
     #print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s" %(pprefix,pcand,prefix,cand,c1,c2,c3,u,wc,l.strip(),wc,ufeats)
-    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s" %(pprefix,pcand,prefix,cand,c1,c2,c3,u,wc,l.strip()) 
+    print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s" %(pprefix,pcand,prefix,cand,c1,c2,c3,u,wc,l.strip())) 
 
 
     

@@ -1,4 +1,5 @@
-# SECOS - SEmantic COmpound Splitter
+# SECOS - SEmantic COmpound Splitter --> Python 3 Fork
+-- Note: only the decompound_secos.py has been tested.
 
 SECOS is an unsupervised compound splitter that uses information from a distributional thesaurus (DT). Details about its working can be found in our [paper](https://www.inf.uni-hamburg.de/en/inst/ab/lt/publications/2016-riedletal-naacl.pdf).
 
