@@ -142,19 +142,8 @@ def appendSuffixAndPrefix(w):
     #    print ps
     if spc>psc:
         return sp
-    return ps
-
-try:
-    cmp
-except NameError:
-    def cmp(x, y):
-        if x < y:
-            return -1
-        elif x > y:
-           return 1
-        else:
-            return 0
- 
+    return ps 
+    
 
 def generateCompound(w,ws):
     #remove too short words
